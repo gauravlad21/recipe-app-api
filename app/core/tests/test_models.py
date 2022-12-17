@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 
 class ModelTests(TestCase):
 
-    def test_create_with_emain_successful(self):
+    def test_create_with_email_successful(self):
         email = 'test@example.com'
         password = 'testpass123'
         user = get_user_model().objects.create_user(
@@ -21,5 +21,5 @@ class ModelTests(TestCase):
             ['TEST3@EXAMPLE.COM', 'TEST3@example.com'],
         ]
         for email, expected in sample_emails:
-            user = get_user_model().objects().create_user(email, 'sample')
+            user = get_user_model().objects.create_user(email, 'sample')
             self.assertEqual(user.email, expected)
