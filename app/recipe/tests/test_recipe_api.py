@@ -34,6 +34,10 @@ def create_recipe(user, **params):
     return recipe
 
 
+def create_user(**params):
+    return get_user_model().objects.create_user(**params)
+
+
 class PublicRecipeAPITests(TestCase):
     """Test unauthenticated API requests"""
 
@@ -100,6 +104,47 @@ class PrivateRecipeTests(TestCase):
         res = self.client.post(RECIPE_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         recipe = Recipe.objects.get(id=res.data['id'])
+        for k, v in payload.items():
+            self.assertEqual(getattr(recipe, k), v)
+        self.assertEqual(recipe.user, self.user)
+
+    def test_partial_update(self):
+        original_link = 'https://example.com/recipe.pdf'
+        recipe = create_recipe(
+            user=self.user,
+            title='sample title',
+            link=original_link,
+        )
+        payload = {'title': 'New recipe title'}
+        url = details_url(recipe_id=recipe.id)
+        res = self.client.patch(url, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        recipe.refresh_from_db()
+        self.assertEqual(recipe.title, payload['title'])
+        self.assertEqual(recipe.link, original_link)
+        self.assertEqual(recipe.user, self.user)
+
+    def test_full_update(self):
+        original_link = 'https://example.com/recipe.pdf'
+        recipe = create_recipe(
+            user=self.user,
+            title='sample title',
+            link=original_link,
+            description="some description",
+        )
+
+        payload = {
+            'title': 'new new new',
+            'link': original_link + "123",
+            'description': 'new new description',
+            'time_minute': 10,
+            'price': Decimal('2.50'),
+        }
+        url = details_url(recipe_id=recipe.id)
+        res = self.client.put(url, payload)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        recipe.refresh_from_db()
         for k, v in payload.items():
             self.assertEqual(getattr(recipe, k), v)
         self.assertEqual(recipe.user, self.user)
