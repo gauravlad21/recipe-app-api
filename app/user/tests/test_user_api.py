@@ -25,13 +25,15 @@ class PublicUserApiTests(TestCase):
     def test_create_user_success(self):
         payload = {
             'email': 'test@example.com',
-            'password': 'pass@123',
+            'password': 'pass123',
             'name': 'Test Name',
         }
         res = self.client.post(CREATE_USER_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         user = get_user_model().objects.get(email=payload['email'])
-        self.assertTrue(user.check_password(payload['password']))
+        password = payload['password']
+        print(password, "<"*10)
+        self.assertTrue(user.check_password(password))
         self.assertNotIn('password', res.data)
 
     def test_user_with_email_exist_error(self):
@@ -45,7 +47,7 @@ class PublicUserApiTests(TestCase):
         res = self.client.post(CREATE_USER_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_password_too_short(self):
+    def test_password_too_short_error(self):
         payload = {
             'email': 'test@example.com',
             'password': 'pw',
