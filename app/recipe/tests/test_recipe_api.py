@@ -170,7 +170,7 @@ class PrivateRecipeTests(TestCase):
             self.assertTrue(exists)
 
     def test_create_recipe_with_existing_tag(self):
-        tag_indian = Tag.objets.create(user=self.user, name='Indian')
+        tag_indian = Tag.objects.create(user=self.user, name='Indian')
         payload = {
             'title': 'Thai curry',
             'time_minute': 30,
