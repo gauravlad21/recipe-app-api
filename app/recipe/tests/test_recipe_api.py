@@ -72,7 +72,7 @@ class PrivateRecipeTests(TestCase):
 
     def test_recipe_list_limited_to_user(self):
         other_user = get_user_model().objects.create_user(
-            email='user@example.com',
+            email='user23@example.com',
             password='pas123',
         )
         create_recipe(user=self.user)
